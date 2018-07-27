@@ -38,13 +38,18 @@ groundTruth_test2="./DSA/test_targets2/"
 #---------------------------------------------------------------------------------------------
 
 Nimgs = 96
-channels = 3
+channels = 1
 height = 1024
 width = 1024
 dataset_path = "./DSA_datasets_training_testing/"
 
 
 def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
+    if train_test=="test":
+        Nimgs=32
+    else:
+        Nimgs=96
+    
     inputs = []
     groundTruth=[]
     files=os.listdir(imgs_dir)
@@ -69,6 +74,7 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
          # b_mask = Image.open(borderMasks_dir + border_masks_name)
            # border_masks[i] = np.asarray(b_mask)
     inputs=np.asarray(inputs)
+    inputs=np.expand_dims(inputs,axis=3)
     groundTruth=np.asarray(groundTruth)
     print (inputs.shape)
     print(groundTruth.shape)
@@ -80,7 +86,7 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
     print ("ground truth are correctly withih pixel value range 0-255 (black-white)")
     #reshaping for my standard tensors
     inputs = np.transpose(inputs,(0,3,1,2))
-    assert(imgs.shape == (Nimgs,channels,height,width))
+    assert(inputs.shape == (Nimgs,channels,height,width))
     groundTruth = np.reshape(groundTruth,(Nimgs,1,height,width))
    # border_masks = np.reshape(border_masks,(Nimgs,1,height,width))
     assert(groundTruth.shape == (Nimgs, 1,height,width))

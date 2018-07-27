@@ -18,25 +18,35 @@ def write_hdf5(arr,outfile):
 
 #------------Path of the images --------------------------------------------------------------
 #train
-original_imgs_train = "./DRIVE/training/images/"
-groundTruth_imgs_train = "./DRIVE/training/1st_manual/"
-borderMasks_imgs_train = "./DRIVE/training/mask/"
+original_train= "./DSA/inputs/"
+groundTruth_train1="./DSA/targets1/"
+groundTruth_train2="./DSA/targets2/"
+
+
+#original_imgs_train = "./DRIVE/training/images/"
+#groundTruth_imgs_train = "./DRIVE/training/1st_manual/"
+#borderMasks_imgs_train = "./DRIVE/training/mask/"
+
 #test
-original_imgs_test = "./DRIVE/test/images/"
-groundTruth_imgs_test = "./DRIVE/test/1st_manual/"
-borderMasks_imgs_test = "./DRIVE/test/mask/"
+original_test="./DSA/test_data/"
+groundTruth_test1="./DSA/test_targets1/"
+groundTruth_test2="./DSA/test_targets2/"
+
+#original_imgs_test = "./DRIVE/test/images/"
+#groundTruth_imgs_test = "./DRIVE/test/1st_manual/"
+#borderMasks_imgs_test = "./DRIVE/test/mask/"
 #---------------------------------------------------------------------------------------------
 
-Nimgs = 20
+Nimgs = 96
 channels = 3
-height = 584
-width = 565
-dataset_path = "./DRIVE_datasets_training_testing/"
+height = 1024
+width = 1024
+dataset_path = "./DSA_datasets_training_testing/"
 
-def get_datasets(imgs_dir,groundTruth_dir,borderMasks_dir,train_test="null"):
+def get_datasets(imgs_dir,groundTruth_dir,train_test="null"):
     imgs = np.empty((Nimgs,height,width,channels))
     groundTruth = np.empty((Nimgs,height,width))
-    border_masks = np.empty((Nimgs,height,width))
+   # border_masks = np.empty((Nimgs,height,width))
     for path, subdirs, files in os.walk(imgs_dir): #list all files, directories in the path
         for i in range(len(files)):
             #original
@@ -48,31 +58,32 @@ def get_datasets(imgs_dir,groundTruth_dir,borderMasks_dir,train_test="null"):
             print "ground truth name: " + groundTruth_name
             g_truth = Image.open(groundTruth_dir + groundTruth_name)
             groundTruth[i] = np.asarray(g_truth)
+            
             #corresponding border masks
-            border_masks_name = ""
-            if train_test=="train":
-                border_masks_name = files[i][0:2] + "_training_mask.gif"
-            elif train_test=="test":
-                border_masks_name = files[i][0:2] + "_test_mask.gif"
-            else:
-                print "specify if train or test!!"
-                exit()
-            print "border masks name: " + border_masks_name
-            b_mask = Image.open(borderMasks_dir + border_masks_name)
-            border_masks[i] = np.asarray(b_mask)
+            #border_masks_name = ""
+            #if train_test=="train":
+             #   border_masks_name = files[i][0:2] + "_training_mask.gif"
+            #elif train_test=="test":
+
+             #   print "specify if train or test!!"
+            
+            #exit()
+           # print "border masks name: " + border_masks_name
+           # b_mask = Image.open(borderMasks_dir + border_masks_name)
+           # border_masks[i] = np.asarray(b_mask)
 
     print "imgs max: " +str(np.max(imgs))
     print "imgs min: " +str(np.min(imgs))
-    assert(np.max(groundTruth)==255 and np.max(border_masks)==255)
-    assert(np.min(groundTruth)==0 and np.min(border_masks)==0)
-    print "ground truth and border masks are correctly withih pixel value range 0-255 (black-white)"
+    assert(np.max(groundTruth)==255 )
+    assert(np.min(groundTruth)==0 )
+    print "ground truth are correctly withih pixel value range 0-255 (black-white)"
     #reshaping for my standard tensors
     imgs = np.transpose(imgs,(0,3,1,2))
     assert(imgs.shape == (Nimgs,channels,height,width))
     groundTruth = np.reshape(groundTruth,(Nimgs,1,height,width))
-    border_masks = np.reshape(border_masks,(Nimgs,1,height,width))
+   # border_masks = np.reshape(border_masks,(Nimgs,1,height,width))
     assert(groundTruth.shape == (Nimgs,1,height,width))
-    assert(border_masks.shape == (Nimgs,1,height,width))
+    #assert(border_masks.shape == (Nimgs,1,height,width))
     return imgs, groundTruth, border_masks
 
 if not os.path.exists(dataset_path):

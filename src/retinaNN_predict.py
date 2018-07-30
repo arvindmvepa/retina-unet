@@ -162,7 +162,7 @@ for i in range(int(N_predicted/group)):
 #====== Evaluate the results
 print ("\n\n========  Evaluate the results =======================")
 #predictions from entire image
-y_scores, y_true = pred_only_FOV(pred_imgs,gtruth_masks, test_border_masks)  #returns data only inside the FOV
+y_scores, y_true = pred_only_FOV(pred_imgs,gtruth_masks)  #returns data only inside the FOV
 print ("Calculating results from entire image:")
 print ("y scores pixels: " +str(y_scores.shape[0]))
 #+" (radius 270: 270*270*3.14==228906), including background around retina: " +str(pred_imgs.shape[0]*pred_imgs.shape[2]*pred_imgs.shape[3]) +" (584*565==329960)")

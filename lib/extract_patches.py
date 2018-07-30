@@ -342,7 +342,7 @@ def paint_border(data,patch_h,patch_w):
 
 
 #return only the pixels contained in the FOV, for both images and masks
-def pred_only_FOV(data_imgs,data_masks,original_imgs_border_masks):
+def pred_only_FOV(data_imgs,data_masks):
     assert (len(data_imgs.shape)==4 and len(data_masks.shape)==4)  #4D arrays
     assert (data_imgs.shape[0]==data_masks.shape[0])
     assert (data_imgs.shape[2]==data_masks.shape[2])

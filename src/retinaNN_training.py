@@ -7,18 +7,18 @@
 #
 ##################################################
 
-
+from time import time
 import numpy as np
-import ConfigParser
-
+import configparser
+import keras
 from keras.models import Model
-from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, Reshape, core, Dropout
 from keras.optimizers import Adam
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as K
 from keras.utils.vis_utils import plot_model as plot
 from keras.optimizers import SGD
-
+from keras.callbacks import TensorBoard
 import sys
 sys.path.insert(0, './lib/')
 from help_functions import *
@@ -31,7 +31,7 @@ from extract_patches import get_data_training
 #Define the neural network
 def get_unet(n_ch,patch_height,patch_width):
     inputs = Input(shape=(n_ch,patch_height,patch_width))
-    conv1 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(inputs)
+    con:v1 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(inputs)
     conv1 = Dropout(0.2)(conv1)
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv1)
     pool1 = MaxPooling2D((2, 2))(conv1)
@@ -46,13 +46,15 @@ def get_unet(n_ch,patch_height,patch_width):
     conv3 = Conv2D(128, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv3)
 
     up1 = UpSampling2D(size=(2, 2))(conv3)
-    up1 = concatenate([conv2,up1],axis=1)
+   # up1 = concatenate([conv2,up1],axis=1)
+    up1 = keras.layers.concatenate([conv2,up1],axis=1)
     conv4 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(up1)
     conv4 = Dropout(0.2)(conv4)
     conv4 = Conv2D(64, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv4)
     #
     up2 = UpSampling2D(size=(2, 2))(conv4)
-    up2 = concatenate([conv1,up2], axis=1)
+   # up2 = concatenate([conv1,up2], axis=1)
+    up2 = keras.layers.concatenate([conv1,up2],axis=1)
     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(up2)
     conv5 = Dropout(0.2)(conv5)
     conv5 = Conv2D(32, (3, 3), activation='relu', padding='same',data_format='channels_first')(conv5)
@@ -65,7 +67,7 @@ def get_unet(n_ch,patch_height,patch_width):
 
     model = Model(inputs=inputs, outputs=conv7)
 
-    # sgd = SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=False)
+    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.3, nesterov=False)
     model.compile(optimizer='sgd', loss='categorical_crossentropy',metrics=['accuracy'])
 
     return model
@@ -98,17 +100,18 @@ def get_gnet(n_ch,patch_height,patch_width):
     conv5 = Dropout(0.2)(conv5)
     conv5 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(conv5)
     #
-    up2 = merge([UpSampling2D(size=(2, 2))(conv5), conv4], mode='concat', concat_axis=1)
+    #up2 = merge([UpSampling2D(size=(2, 2))(conv5), conv4], mode='concat', concat_axis=1)
+    up2
     conv6 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(up2)
     conv6 = Dropout(0.2)(conv6)
     conv6 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(conv6)
     #
-    up3 = merge([UpSampling2D(size=(2, 2))(conv6), conv3], mode='concat', concat_axis=1)
+   #up3 = merge([UpSampling2D(size=(2, 2))(conv6), conv3], mode='concat', concat_axis=1)
     conv7 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(up3)
     conv7 = Dropout(0.2)(conv7)
     conv7 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(conv7)
     #
-    up4 = merge([UpSampling2D(size=(2, 2))(conv7), conv2], mode='concat', concat_axis=1)
+    #up4 = merge([UpSampling2D(size=(2, 2))(conv7), conv2], mode='concat', concat_axis=1)
     conv8 = Convolution2D(16, 3, 3, activation='relu', border_mode='same')(up4)
     conv8 = Dropout(0.2)(conv8)
     conv8 = Convolution2D(16, 3, 3, activation='relu', border_mode='same')(conv8)
@@ -132,7 +135,7 @@ def get_gnet(n_ch,patch_height,patch_width):
     return model
 
 #========= Load settings from Config file
-config = ConfigParser.RawConfigParser()
+config = configparser.ConfigParser()
 config.read('configuration.txt')
 #patch to the datasets
 path_data = config.get('data paths', 'path_local')
@@ -166,9 +169,9 @@ n_ch = patches_imgs_train.shape[1]
 patch_height = patches_imgs_train.shape[2]
 patch_width = patches_imgs_train.shape[3]
 model = get_unet(n_ch, patch_height, patch_width)  #the U-net model
-print "Check: final output of the network:"
-print model.output_shape
-plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
+print ("Check: final output of the network:")
+print (model.output_shape)
+#plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
 json_string = model.to_json()
 open('./'+name_experiment+'/'+name_experiment +'_architecture.json', 'w').write(json_string)
 
@@ -187,9 +190,29 @@ checkpointer = ModelCheckpoint(filepath='./'+name_experiment+'/'+name_experiment
 #
 # lrate_drop = LearningRateScheduler(step_decay)
 
-patches_masks_train = masks_Unet(patches_masks_train)  #reduce memory consumption
-model.fit(patches_imgs_train, patches_masks_train, nb_epoch=N_epochs, batch_size=batch_size, verbose=2, shuffle=True, validation_split=0.1, callbacks=[checkpointer])
 
+patches_masks_train = masks_Unet(patches_masks_train)  #reduce memory consumption
+
+#changed callbacks
+model.fit(patches_imgs_train, patches_masks_train, nb_epoch=N_epochs, batch_size=batch_size, verbose=1, shuffle=True, validation_split=0.33, callbacks=[checkpointer])
+#list all data in history
+print(history,history.keys())
+#summarize history for accuracy
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+#summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
 
 #========== Save and test the last model ===================
 model.save_weights('./'+name_experiment+'/'+name_experiment +'_last_weights.h5', overwrite=True)

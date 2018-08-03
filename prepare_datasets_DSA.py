@@ -61,16 +61,16 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
          input_file=os.path.join(imgs_dir,file)
          img = cv2.imread(input_file,0)
          inputs.append(img)
-    for file in files1:
-         target_file=os.path.join(groundTruth_dir1,file)
-         target_image=np.array(io.imread(target_file))
-         target_file=cv2.threshold(target_image, 127, 1, cv2.THRESH_BINARY)[1]
-         groundTruth.append(target_image)         
-    for file in files2:
-         target_file=os.path.join(groundTruth_dir2,file)
-         target_image=np.array(io.imread(target_file))[:,:,3]
-         target_image=cv2.threshold(target_image,127,1,cv2.THRESH_BINARY)[1]
-         groundTruth.append(target_image)
+         if os.path.exists(os.path.join(groundTruth_dir1,file)):
+            target_file=os.path.join(groundTruth_dir1,file)
+            target_image=np.array(io.imread(target_file))
+            target_image=cv2.threshold(target_image, 127, 1, cv2.THRESH_BINARY)[1]
+            groundTruth.append(target_image)         
+         elif os.path.exists(os.path.join(groundTruth_dir2,file)):
+            target_file=os.path.join(groundTruth_dir2,file)
+            target_image=np.array(io.imread(target_file))[:,:,3]
+            target_image=cv2.threshold(target_image,127,1,cv2.THRESH_BINARY)[1]
+            groundTruth.append(target_image)
          # b_mask = Image.open(borderMasks_dir + border_masks_name)
            # border_masks[i] = np.asarray(b_mask)
     inputs=np.asarray(inputs)
@@ -81,9 +81,9 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
 
     print ("imgs max: " +str(np.max(inputs)))
     print ("imgs min: " +str(np.min(inputs)))
-    assert(np.max(groundTruth)==255 )
+    assert(np.max(groundTruth)==1 )
     assert(np.min(groundTruth)==0 )
-    print ("ground truth are correctly withih pixel value range 0-255 (black-white)")
+    print ("ground truth are correctly withih pixel value range 0-1 (black-white)")
     #reshaping for my standard tensors
     inputs = np.transpose(inputs,(0,3,1,2))
     assert(inputs.shape == (Nimgs,channels,height,width))

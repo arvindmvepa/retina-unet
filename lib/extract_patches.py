@@ -25,7 +25,7 @@ def get_data_training(DRIVE_train_imgs_original,
 
 
     train_imgs = my_PreProc(train_imgs_original)
-    train_masks = train_masks/255.
+   # train_masks = train_masks/255.
 
     train_imgs = train_imgs[:,:,9:574,:]  #cut bottom and top so now it is 565*565
     train_masks = train_masks[:,:,9:574,:]  #cut bottom and top so now it is 565*565
@@ -57,7 +57,7 @@ def get_data_testing(DRIVE_test_imgs_original, DRIVE_test_groudTruth, Imgs_to_te
     test_masks = load_hdf5(DRIVE_test_groudTruth)
 
     test_imgs = my_PreProc(test_imgs_original)
-    test_masks = test_masks/255.
+   # test_masks = test_masks/255.
 
     #extend both images and masks so they can be divided exactly by the patches dimensions
     test_imgs = test_imgs[0:Imgs_to_test,:,:,:]
@@ -97,7 +97,7 @@ def get_data_testing_overlap(DRIVE_test_imgs_original, DRIVE_test_groudTruth, Im
     test_masks = load_hdf5(DRIVE_test_groudTruth)
 
     test_imgs = my_PreProc(test_imgs_original)
-    test_masks = test_masks/255.
+   # test_masks = test_masks/255.
     #extend both images and masks so they can be divided exactly by the patches dimensions
     test_imgs = test_imgs[0:Imgs_to_test,:,:,:]
     test_masks = test_masks[0:Imgs_to_test,:,:,:]

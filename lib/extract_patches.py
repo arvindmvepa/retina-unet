@@ -363,7 +363,7 @@ def pred_only_FOV(data_imgs,data_masks):
     return new_pred_imgs, new_pred_masks
 
 #function to set to black everything outside the FOV, in a full image
-def kill_border(data, original_imgs_border_masks):
+def kill_border(data): #original_imgs_border_masks):
     assert (len(data.shape)==4)  #4D arrays
     assert (data.shape[1]==1 or data.shape[1]==3)  #check the channel is 1 or 3
     height = data.shape[2]
@@ -371,9 +371,10 @@ def kill_border(data, original_imgs_border_masks):
     for i in range(data.shape[0]):  #loop over the full images
         for x in range(width):
             for y in range(height):
-                if inside_FOV_DRIVE(i,x,y,original_imgs_border_masks)==False:
-                    data[i,:,y,x]=0.0
-
+                if data[i,:,y,x]<0.49 and data[i,:,y,x]>0.4:
+                    data[i,:,y,x]=0.51
+                elif data[i,:,y,x]<=0.4:
+                    data[i,:,y,x]=0
 
 def inside_FOV_DRIVE(i, x, y, DRIVE_masks):
     assert (len(DRIVE_masks.shape)==4)  #4D arrays

@@ -134,7 +134,7 @@ else:
     orig_imgs = recompone(patches_imgs_test,13,12)  # originals
     gtruth_masks = recompone(patches_masks_test,13,12)  #masks
 # apply the DRIVE masks on the repdictions #set everything outside the FOV to zero!!
-#kill_border(pred_imgs, test_border_masks)  #DRIVE MASK  #only for visualization
+kill_border(pred_imgs)# test_border_masks)  #change killborder to threshold  #only for visualization
 
 ## back to original dimensions
 orig_imgs = orig_imgs[:,:,0:full_img_height,0:full_img_width]

@@ -149,12 +149,12 @@ batch_size = int(config.get('training settings', 'batch_size'))
 
 #============ Load the data and divided in patches
 patches_imgs_train, patches_masks_train = get_data_training(
-    DRIVE_train_imgs_original = path_data + config.get('data paths', 'train_imgs_original'),
-    DRIVE_train_groudTruth = path_data + config.get('data paths', 'train_groundTruth'),  #masks
+    DSA_train_imgs_original = path_data + config.get('data paths', 'train_imgs_original'),
+    DSA_train_groudTruth = path_data + config.get('data paths', 'train_groundTruth'),  #masks
     patch_height = int(config.get('data attributes', 'patch_height')),
     patch_width = int(config.get('data attributes', 'patch_width')),
     N_subimgs = int(config.get('training settings', 'N_subimgs')),
-    inside_FOV = config.getboolean('training settings', 'inside_FOV') #select the patches only inside the FOV  (default == True)
+    inside_FOV = config.getboolean('training settings', 'inside_FOV') #select the patches only inside the FOV  (default == False) # change from original u-net code
 )
 
 
@@ -171,7 +171,7 @@ patch_width = patches_imgs_train.shape[3]
 model = get_unet(n_ch, patch_height, patch_width)  #the U-net model
 print ("Check: final output of the network:")
 print (model.output_shape)
-#plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png')   #check how the model looks like
+#plot(model, to_file='./'+name_experiment+'/'+name_experiment + '_model.png') # could not install module required to plot model schematic
 json_string = model.to_json()
 open('./'+name_experiment+'/'+name_experiment +'_architecture.json', 'w').write(json_string)
 

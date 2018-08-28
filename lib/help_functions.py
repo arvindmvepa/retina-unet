@@ -50,7 +50,7 @@ def visualize(data,filename):
     return img
 
 
-#prepare the mask in the right shape for the Unet
+#prepare the mask in the right shape for the Unet  # not used for dsa 
 def masks_Unet(masks):
     assert (len(masks.shape)==4)  #4D arrays
     assert (masks.shape[1]==1 )  #check the channel is 1

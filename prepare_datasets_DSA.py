@@ -23,18 +23,12 @@ groundTruth_train1="./DSA/targets1/"
 groundTruth_train2="./DSA/targets2/"
 
 
-#original_imgs_train = "./DRIVE/training/images/"
-#groundTruth_imgs_train = "./DRIVE/training/1st_manual/"
-#borderMasks_imgs_train = "./DRIVE/training/mask/"
 
 #test
 original_test="./DSA/test_data/"
 groundTruth_test1="./DSA/test_targets1/"
 groundTruth_test2="./DSA/test_targets2/"
 
-#original_imgs_test = "./DRIVE/test/images/"
-#groundTruth_imgs_test = "./DRIVE/test/1st_manual/"
-#borderMasks_imgs_test = "./DRIVE/test/mask/"
 #---------------------------------------------------------------------------------------------
 
 Nimgs = 96
@@ -55,7 +49,7 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
     files=os.listdir(imgs_dir)
     files1=os.listdir(groundTruth_dir1)
     files2=os.listdir(groundTruth_dir2)
-   # border_masks = np.empty((Nimgs,height,width))
+   
        
     for file in files:
          input_file=os.path.join(imgs_dir,file)
@@ -71,8 +65,8 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
             target_image=np.array(io.imread(target_file))[:,:,3]
             target_image=cv2.threshold(target_image,127,1,cv2.THRESH_BINARY)[1]
             groundTruth.append(target_image)
-         # b_mask = Image.open(borderMasks_dir + border_masks_name)
-           # border_masks[i] = np.asarray(b_mask)
+         
+    
     inputs=np.asarray(inputs)
     inputs=np.expand_dims(inputs,axis=3)
     groundTruth=np.asarray(groundTruth)
@@ -88,9 +82,8 @@ def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
     inputs = np.transpose(inputs,(0,3,1,2))
     assert(inputs.shape == (Nimgs,channels,height,width))
     groundTruth = np.reshape(groundTruth,(Nimgs,1,height,width))
-   # border_masks = np.reshape(border_masks,(Nimgs,1,height,width))
+
     assert(groundTruth.shape == (Nimgs, 1,height,width))
-    #assert(border_masks.shape == (Nimgs,1,height,width))
     return inputs, groundTruth
 
 if not os.path.exists(dataset_path):

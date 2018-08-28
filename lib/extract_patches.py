@@ -13,15 +13,15 @@ from pre_processing import my_PreProc
 # random.seed(10)
 
 #Load the original data and return the extracted patches for training/testing
-def get_data_training(DRIVE_train_imgs_original,
-                      DRIVE_train_groudTruth,
+def get_data_training(DSA_train_imgs_original,
+                      DSA_train_groudTruth,
                       patch_height,
                       patch_width,
                       N_subimgs,
                       inside_FOV):
-    train_imgs_original = load_hdf5(DRIVE_train_imgs_original)
-    train_masks = load_hdf5(DRIVE_train_groudTruth) #masks always the same
-    # visualize(group_images(train_imgs_original[0:20,:,:,:],5),'imgs_train')#.show()  #check original imgs train
+    train_imgs_original = load_hdf5(DSA_train_imgs_original)
+    train_masks = load_hdf5(DSA_train_groudTruth) #masks always the same
+    
 
 
     train_imgs = my_PreProc(train_imgs_original)
@@ -51,10 +51,10 @@ def get_data_training(DRIVE_train_imgs_original,
 
 
 #Load the original data and return the extracted patches for training/testing
-def get_data_testing(DRIVE_test_imgs_original, DRIVE_test_groudTruth, Imgs_to_test, patch_height, patch_width):
+def get_data_testing(DSA_test_imgs_original, DSA_test_groudTruth, Imgs_to_test, patch_height, patch_width):
     ### test
-    test_imgs_original = load_hdf5(DRIVE_test_imgs_original)
-    test_masks = load_hdf5(DRIVE_test_groudTruth)
+    test_imgs_original = load_hdf5(DSA_test_imgs_original)
+    test_masks = load_hdf5(DSA_test_groudTruth)
 
     test_imgs = my_PreProc(test_imgs_original)
    # test_masks = test_masks/255.
@@ -91,10 +91,10 @@ def get_data_testing(DRIVE_test_imgs_original, DRIVE_test_groudTruth, Imgs_to_te
 
 # Load the original data and return the extracted patches for testing
 # return the ground truth in its original shape
-def get_data_testing_overlap(DRIVE_test_imgs_original, DRIVE_test_groudTruth, Imgs_to_test, patch_height, patch_width, stride_height, stride_width):
+def get_data_testing_overlap(DSA_test_imgs_original, DSA_test_groudTruth, Imgs_to_test, patch_height, patch_width, stride_height, stride_width):
     ### test
-    test_imgs_original = load_hdf5(DRIVE_test_imgs_original)
-    test_masks = load_hdf5(DRIVE_test_groudTruth)
+    test_imgs_original = load_hdf5(DSA_test_imgs_original)
+    test_masks = load_hdf5(DSA_test_groudTruth)
 
     test_imgs = my_PreProc(test_imgs_original)
    # test_masks = test_masks/255.
@@ -362,8 +362,8 @@ def pred_only_FOV(data_imgs,data_masks):
     new_pred_masks = np.asarray(new_pred_masks)
     return new_pred_imgs, new_pred_masks
 
-#function to set to black everything outside the FOV, in a full image
-def kill_border(data): #original_imgs_border_masks):
+# change from kill_border to thresholding
+def thresholding(data): 
     assert (len(data.shape)==4)  #4D arrays
     assert (data.shape[1]==1 or data.shape[1]==3)  #check the channel is 1 or 3
     height = data.shape[2]

@@ -28,7 +28,7 @@ from help_functions import *
 from extract_patches import recompone
 from extract_patches import recompone_overlap
 from extract_patches import paint_border
-from extract_patches import kill_border
+from extract_patches import thresholding
 from extract_patches import pred_only_FOV
 from extract_patches import get_data_testing
 from extract_patches import get_data_testing_overlap
@@ -44,12 +44,12 @@ config.read('configuration.txt')
 path_data = config.get('data paths', 'path_local')
 
 #original test images (for FOV selection)
-DRIVE_test_imgs_original = path_data + config.get('data paths', 'test_imgs_original')
-test_imgs_orig = load_hdf5(DRIVE_test_imgs_original)
+DSA_test_imgs_original = path_data + config.get('data paths', 'test_imgs_original')
+test_imgs_orig = load_hdf5(DSA_test_imgs_original)
 full_img_height = test_imgs_orig.shape[2]
 full_img_width = test_imgs_orig.shape[3]
-#the border masks provided by the DRIVE
-#DRIVE_test_border_masks = path_data + config.get('data paths', 'test_border_masks')
+#the border masks provided by the DRIVE   # masks not used for dsa data sets
+#DRIVE_test_border_masks = path_data + config.get('data paths', 'test_border_masks')     
 #test_border_masks = load_hdf5(DRIVE_test_border_masks)
 
 # dimension of the patches
@@ -70,7 +70,7 @@ N_visual = int(config.get('testing settings', 'N_group_visual'))
 average_mode = config.getboolean('testing settings', 'average_mode')
 
 
-# #ground truth
+# #ground truth  
 # gtruth= path_data + config.get('data paths', 'test_groundTruth')
 # img_truth= load_hdf5(gtruth)
 # visualize(group_images(test_imgs_orig[0:20,:,:,:],5),'original')#.show()
@@ -87,8 +87,8 @@ masks_test  = None
 patches_masks_test = None
 if average_mode == True:
     patches_imgs_test, new_height, new_width, masks_test = get_data_testing_overlap(
-        DRIVE_test_imgs_original = DRIVE_test_imgs_original,  #original
-        DRIVE_test_groudTruth = path_data + config.get('data paths', 'test_groundTruth'),  #masks
+        DSA_test_imgs_original = DSA_test_imgs_original,  #original
+        DSA_test_groudTruth = path_data + config.get('data paths', 'test_groundTruth'),  #masks
         Imgs_to_test = int(config.get('testing settings', 'full_images_to_test')),
         patch_height = patch_height,
         patch_width = patch_width,
@@ -97,8 +97,8 @@ if average_mode == True:
     )
 else:
     patches_imgs_test, patches_masks_test = get_data_testing(
-        DRIVE_test_imgs_original = DRIVE_test_imgs_original,  #original
-        DRIVE_test_groudTruth = path_data + config.get('data paths', 'test_groundTruth'),  #masks
+        DSA_test_imgs_original = DSA_test_imgs_original,  #original
+        DSA_test_groudTruth = path_data + config.get('data paths', 'test_groundTruth'),  #masks
         Imgs_to_test = int(config.get('testing settings', 'full_images_to_test')),
         patch_height = patch_height,
         patch_width = patch_width,
@@ -133,8 +133,8 @@ else:
     pred_imgs = recompone(pred_patches,13,12)       # predictions
     orig_imgs = recompone(patches_imgs_test,13,12)  # originals
     gtruth_masks = recompone(patches_masks_test,13,12)  #masks
-# apply the DRIVE masks on the repdictions #set everything outside the FOV to zero!!
-kill_border(pred_imgs)# test_border_masks)  #change killborder to threshold  #only for visualization
+#
+thresholding(pred_imgs)  #change kill_border function to threshold  #only for visualization
 
 ## back to original dimensions
 orig_imgs = orig_imgs[:,:,0:full_img_height,0:full_img_width]

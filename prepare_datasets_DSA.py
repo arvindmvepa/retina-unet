@@ -51,7 +51,7 @@ def get_datasets(imgs_dir, groundTruth_dir, train_test="null"):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         inputs.append(img)
 
-        mask_file = os.path.join(groundTruth_dir, file)
+        mask_file = os.path.join(groundTruth_dir, file+".npy")
         mask = np.load(mask_file)
         groundTruth.append(mask)
 

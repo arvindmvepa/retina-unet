@@ -47,8 +47,7 @@ def get_datasets(imgs_dir, groundTruth_dir, train_test="null"):
 
     for file in files:
         input_file = os.path.join(imgs_dir, file)
-        img = cv2.imread(input_file)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.imread(input_file, 0)
         inputs.append(img)
 
         mask_file = os.path.join(groundTruth_dir, file+".npy")

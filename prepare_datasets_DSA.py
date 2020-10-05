@@ -18,16 +18,16 @@ def write_hdf5(arr,outfile):
 
 #------------Path of the images --------------------------------------------------------------
 #train
-original_train= "./DSA/inputs/"
-groundTruth_train1="./DSA/targets1/"
-groundTruth_train2="./DSA/targets2/"
+original_train= "/root/DSA/inputs/"
+groundTruth_train1="/root/DSA/targets1/"
+groundTruth_train2="/root/DSA/targets2/"
 
 
 
 #test
-original_test="./DSA/test_data/"
-groundTruth_test1="./DSA/test_targets1/"
-groundTruth_test2="./DSA/test_targets2/"
+original_test="/root/DSA/test_data/"
+groundTruth_test1="/root/DSA/test_targets1/"
+groundTruth_test2="/root/DSA/test_targets2/"
 
 #---------------------------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ Nimgs = 96
 channels = 1
 height = 1024
 width = 1024
-dataset_path = "./DSA_datasets_training_testing/"
+dataset_path = "/root/DSA_datasets_training_testing/"
 
 
 def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):

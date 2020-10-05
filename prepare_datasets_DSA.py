@@ -35,7 +35,7 @@ Nimgs = 96
 channels = 1
 height = 1024
 width = 1024
-dataset_path = "/root/DSA_datasets_training_testing/"
+dataset_path = "./DSA_datasets_training_testing/"
 
 
 def get_datasets(imgs_dir,groundTruth_dir1,groundTruth_dir2,train_test="null"):
